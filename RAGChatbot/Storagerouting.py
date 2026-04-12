@@ -89,7 +89,6 @@ def retrieve_chunks(matched_notes, question, embeddings, splitter):
     chunks  = splitter.split_documents(docs)
     store = FAISS.from_documents(chunks, embeddings)
     results = store.as_retriever(search_kwargs={"k": 4}).invoke(question)
-    store.delete_collection()
     return results
 
 # ================================================================
