@@ -1,141 +1,106 @@
 import os
 import glob
+import streamlit as st
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores import Chroma
-from langchain_ollama import ChatOllama
+from langchain_anthropic import ChatAnthropic                  
 from langchain_core.messages import HumanMessage, SystemMessage
 
 # ── CONFIG ──────────────────────────────────────────────────────
-VAULT_PATH   = r"C:\Users\yeapj\OneDrive\Documents\Obsidian\claude-repo"  # ← change this
-OLLAMA_MODEL = "llama3"
-TOP_N_FILES  = 5
+ANTHROPIC_API_KEY = st.secrets["ANTHROPIC_API_KEY"]           
+MODEL             = "claude-3-5-haiku-20241022"               
 
-splitter   = RecursiveCharacterTextSplitter(
-    chunk_size=500,
-    chunk_overlap=50,
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=500, chunk_overlap=50,
     separators=["\n## ", "\n### ", "\n\n", "\n", " "]
 )
-embeddings = OllamaEmbeddings(model=OLLAMA_MODEL)
-llm        = ChatOllama(model=OLLAMA_MODEL)
+llm = ChatAnthropic(api_key=ANTHROPIC_API_KEY, model=MODEL)  
 
-# ── STEP 1: Scan vault filenames only (zero RAM cost) ────────────
-def get_all_note_paths(vault_path):
-    return glob.glob(os.path.join(vault_path, "**", "*.md"), recursive=True)
+# ── SIDEBAR: Upload .md files ──────────────────────────────────
+st.set_page_config(page_title="Obsidian RAG", page_icon="📓")
+st.title(" Obsidian RAG Chatbot (Claude)")
 
-# ── STEP 2: Keyword match filenames to find relevant notes ───────
-def find_relevant_files(question, all_paths, top_n=TOP_N_FILES):
+uploaded_files = st.sidebar.file_uploader(
+    "Upload your Obsidian `.md` notes",
+    type=["md"],
+    accept_multiple_files=True
+)
+
+TEMP_DIR = "/tmp/obsidian_notes"
+os.makedirs(TEMP_DIR, exist_ok=True)
+
+if uploaded_files:
+    for f in uploaded_files:
+        with open(os.path.join(TEMP_DIR, f.name), "wb") as out:
+            out.write(f.read())
+    st.sidebar.success(f" {len(uploaded_files)} notes loaded")
+
+# ── HELPERS ────────────────────────────────────────────────────
+def get_all_note_paths():
+    return glob.glob(os.path.join(TEMP_DIR, "**", "*.md"), recursive=True)
+
+def find_relevant_files(question, all_paths):
     keywords = [w.lower() for w in question.split() if len(w) > 3]
-    scored = []
-    for path in all_paths:
-        name   = os.path.basename(path).lower().replace(".md", "")
-        folder = os.path.dirname(path).lower()
-        score  = sum(1 for kw in keywords if kw in name or kw in folder)
-        scored.append((score, path))
+    scored = [(sum(1 for kw in keywords if kw in os.path.basename(p).lower()), p) for p in all_paths]
+    scored.sort(reverse=True)
+    top = [p for s, p in scored if s > 0][:5]
+    return top or sorted(all_paths, key=os.path.getmtime, reverse=True)[:5]
 
-    scored.sort(key=lambda x: x[0], reverse=True)
-    top = [p for s, p in scored if s > 0][:top_n]
-
-    if not top:
-        # fallback: most recently modified notes
-        top = sorted(all_paths, key=os.path.getmtime, reverse=True)[:top_n]
-        print(f"   No filename match — using {top_n} most recent notes")
-
-    return top
-
-# ── STEP 3: Read files → chunk → embed → retrieve ───────────────
 def read_and_retrieve(file_paths, question):
+    from langchain_community.embeddings import HuggingFaceEmbeddings
     all_docs = []
-
     for path in file_paths:
         try:
-            # Actually reads the file content here
-            loader = TextLoader(path, encoding="utf-8")
-            docs   = loader.load()
-            all_docs.extend(docs)
-            print(f"    Read: {os.path.basename(path)} ({len(docs[0].page_content)} chars)")
-        except Exception as e:
-            print(f"     Skipped {os.path.basename(path)}: {e}")
-
+            all_docs.extend(TextLoader(path, encoding="utf-8").load())
+        except:
+            pass
     if not all_docs:
-        return []
-
-    # Split content into chunks
-    chunks = splitter.split_documents(all_docs)
-    print(f"    {len(chunks)} chunks ready for retrieval")
-
-    # Embed chunks into a temporary in-memory store
-    temp_store = Chroma.from_documents(
-        chunks,
-        embeddings,
-        collection_name="temp_session"
-    )
-
-    # Retrieve the most relevant chunks for the question
-    retriever = temp_store.as_retriever(search_kwargs={"k": 4})
+        return [], []
+    chunks    = splitter.split_documents(all_docs)
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    store     = Chroma.from_documents(chunks, embeddings, collection_name="temp")
+    retriever = store.as_retriever(search_kwargs={"k": 4})
     results   = retriever.invoke(question)
+    store.delete_collection()
+    sources   = list(set([os.path.basename(d.metadata.get("source", "")) for d in results]))
+    return results, sources
 
-    # Clean up temp store from memory
-    temp_store.delete_collection()
+# ── CHAT UI ────────────────────────────────────────────────────
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
-    return results
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
 
-# ── STEP 4: Build context and generate answer ────────────────────
-def ask(question, all_paths):
-    print(f"\n Scanning {len(all_paths)} filenames for: '{question}'")
-    matched = find_relevant_files(question, all_paths)
+if prompt := st.chat_input("Ask about your notes..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
 
-    print(f"\n Loading {len(matched)} matched note(s):")
-    for f in matched:
-        print(f"   - {os.path.basename(f)}")
+    with st.chat_message("assistant"):
+        all_paths = get_all_note_paths()
+        if not all_paths:
+            st.warning(" Please upload your Obsidian `.md` notes in the sidebar first.")
+        else:
+            with st.spinner(" Searching your notes..."):
+                matched          = find_relevant_files(prompt, all_paths)
+                results, sources = read_and_retrieve(matched, prompt)
 
-    # Read files and retrieve relevant chunks
-    results = read_and_retrieve(matched, question)
-
-    if not results:
-        print("\n  Could not extract useful content from matched notes.\n")
-        return
-
-    # Build context string from retrieved chunks
-    context = "\n\n---\n\n".join([doc.page_content for doc in results])
-
-    # Show which notes the answer is drawn from
-    sources = list(set([
-        os.path.basename(doc.metadata.get("source", "unknown"))
-        for doc in results
-    ]))
-
-    print(f"\n Generating answer from: {', '.join(sources)}\n")
-
-    # Send to LLM
-    messages = [
-        SystemMessage(content=(
-            "You are a helpful assistant. Answer the question using ONLY "
-            "the Obsidian notes provided below as context. "
-            "Quote the relevant note name when possible. "
-            "If the notes don't contain enough info, say so clearly."
-        )),
-        HumanMessage(content=(
-            f"My notes:\n\n{context}\n\n"
-            f"Question: {question}"
-        ))
-    ]
-
-    answer = llm.invoke(messages)
-
-    print(f"📓 Sources used: {', '.join(sources)}")
-    print(f"\n Answer:\n{answer.content}\n")
-    print("─" * 60)
-
-# ── STEP 5: Chat loop ────────────────────────────────────────────
-all_paths = get_all_note_paths(VAULT_PATH)
-print(f" Vault indexed: {len(all_paths)} notes found (filenames only)")
-print(" Ask anything about your notes. Type 'exit' to quit.\n")
-
-while True:
-    q = input("You: ").strip()
-    if q.lower() in ("exit", "quit", "q"):
-        break
-    if q:
-        ask(q, all_paths)
+            if not results:
+                st.warning("No relevant content found in your notes.")
+            else:
+                context  = "\n\n---\n\n".join([d.page_content for d in results])
+                messages = [
+                    SystemMessage(content=(
+                        "You are a helpful assistant. Answer using ONLY the "
+                        "Obsidian notes below. Mention note names where relevant. "
+                        "If the notes don't have enough info, say so clearly."
+                    )),
+                    HumanMessage(content=f"Notes:\n{context}\n\nQuestion: {prompt}")
+                ]
+                answer = llm.invoke(messages).content
+                st.markdown(answer)
+                st.caption(f"📓 Sources: {', '.join(sources)}")
+                st.session_state.messages.append({"role": "assistant", "content": answer})

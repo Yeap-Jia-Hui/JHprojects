@@ -21,9 +21,10 @@ Ensure your repository has these files in the root directory:
 2. Connect your GitHub account
 3. Select your repository and branch
 4. In the app settings, go to "Secrets"
-5. Add your OpenAI API key:
+5. Add your API keys:
    ```
-   OPENAI_API_KEY = "your-actual-openai-api-key-here"
+   OPENAI_API_KEY = "your-openai-api-key-here"
+   ANTHROPIC_API_KEY = "your-anthropic-api-key-here"
    ```
 
 #### 3. Deploy
