@@ -19,7 +19,7 @@ pip install -r requirements.txt
 
 2. Run the app:
 ```bash
-streamlit run app.py
+streamlit run streamlit_app.py
 ```
 
 3. Open your browser to `http://localhost:8501`
@@ -35,7 +35,7 @@ streamlit run app.py
 3. **Connect your GitHub account** and select this repository
 
 4. **Configure the app**:
-   - **Main file path**: `RAGChatbot/app.py`
+   - **Main file path**: `RAGChatbot/streamlit_app.py`
    - **URL slug**: (optional, leave blank for auto-generated)
 
 5. **Add secrets** (optional, for production):
@@ -47,8 +47,9 @@ streamlit run app.py
 ### Method 2: Manual Upload
 
 1. **Create a zip file** containing:
-   - `app.py`
+   - `streamlit_app.py`
    - `requirements.txt`
+   - `.streamlit/config.toml`
    - Any other necessary files
 
 2. **Go to [share.streamlit.io](https://share.streamlit.io)**
