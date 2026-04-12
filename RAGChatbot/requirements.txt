@@ -1,8 +1,15 @@
-langchain
-langchain-community
-langchain-text-splitters
-langchain-core
-langchain-anthropic
-chromadb
-sentence-transformers
-requests
+# LangChain — ALL packages pinned to same 0.3.x minor series to avoid conflicts
+langchain>=0.3,<0.4
+langchain-community>=0.3,<0.4
+langchain-text-splitters>=0.3,<0.4
+langchain-core>=0.3,<0.4
+langchain-anthropic>=0.3,<0.4
+
+# Vector store
+chromadb>=0.5,<1.0
+
+# Embeddings model
+sentence-transformers>=3.0,<4.0
+
+# HTTP requests
+requests>=2.31,<3.0
