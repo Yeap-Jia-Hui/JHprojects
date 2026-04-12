@@ -2,6 +2,16 @@
 
 A Streamlit web application that allows you to upload documents and chat with them using Retrieval-Augmented Generation (RAG).
 
+## 🚨 Deployment Quick Reference
+
+| Deployment Method | Main File | Requirements |
+|------------------|-----------|--------------|
+| **Streamlit Cloud** | `streamlit_app.py` | OpenAI API key |
+| **Local with Ollama** | `Storagerouting.py` | Ollama installed locally |
+| **Local Streamlit** | `streamlit_app.py` | OpenAI API key |
+
+**❌ Don't deploy `Storagerouting.py` to Streamlit Cloud** - it requires local Ollama which isn't available in the cloud.
+
 ## Features
 
 - 📁 Upload multiple text/markdown files
@@ -12,19 +22,28 @@ A Streamlit web application that allows you to upload documents and chat with th
 
 ## Local Development
 
-1. Install dependencies:
+### For Streamlit Web App (Recommended):
 ```bash
 pip install -r requirements.txt
-```
-
-2. Run the app:
-```bash
 streamlit run streamlit_app.py
 ```
 
-3. Open your browser to `http://localhost:8501`
+### For Local Ollama (Requires Ollama installed):
+```bash
+pip install -r requirements.txt
+# Make sure Ollama is running: ollama serve
+python Storagerouting.py
+```
+
+Open your browser to `http://localhost:8501`
 
 ## Streamlit Cloud Deployment
+
+### ⚠️ IMPORTANT: Use the Correct File!
+
+**For Streamlit Cloud deployment, use `streamlit_app.py` as your main file.**
+
+**❌ DO NOT use `Storagerouting.py` for Streamlit Cloud** - it's designed for local Ollama usage only.
 
 ### Method 1: Direct GitHub Deployment
 
@@ -35,7 +54,7 @@ streamlit run streamlit_app.py
 3. **Connect your GitHub account** and select this repository
 
 4. **Configure the app**:
-   - **Main file path**: `RAGChatbot/streamlit_app.py`
+   - **Main file path**: `RAGChatbot/streamlit_app.py` ⚠️
    - **URL slug**: (optional, leave blank for auto-generated)
 
 5. **Add secrets** (optional, for production):
@@ -47,7 +66,7 @@ streamlit run streamlit_app.py
 ### Method 2: Manual Upload
 
 1. **Create a zip file** containing:
-   - `streamlit_app.py`
+   - `streamlit_app.py` ⚠️
    - `requirements.txt`
    - `.streamlit/config.toml`
    - Any other necessary files
@@ -105,9 +124,10 @@ pip install --upgrade -r requirements.txt
 - Try smaller files if processing fails
 
 ### Streamlit Cloud Issues
-- Make sure you're using `streamlit_app.py` as the main file
+- Make sure you're using `streamlit_app.py` as the main file, **NOT** `Storagerouting.py`
 - Check that all files are in the `RAGChatbot/` directory
 - Verify your `requirements.txt` includes all dependencies
+- If you get `langchain_ollama` errors, you're using the wrong file for deployment
 
 ## Local Ollama Version
 
