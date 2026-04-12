@@ -70,6 +70,16 @@ streamlit run streamlit_app.py
 - **Chunk Size**: Adjust how documents are split (200-2000 characters)
 - **Chunk Overlap**: Set overlap between chunks (0-200 characters)
 
+## Deployment Checklist
+
+Before deploying to Streamlit Cloud, run:
+
+```bash
+python check_deployment.py
+```
+
+This will verify all required packages are installed.
+
 ## Important Notes
 
 - **API Key Required**: You need an OpenAI API key for both embeddings and chat
@@ -93,6 +103,11 @@ pip install --upgrade -r requirements.txt
 - Ensure your files are valid text/markdown format
 - Check file encoding (UTF-8 recommended)
 - Try smaller files if processing fails
+
+### Streamlit Cloud Issues
+- Make sure you're using `streamlit_app.py` as the main file
+- Check that all files are in the `RAGChatbot/` directory
+- Verify your `requirements.txt` includes all dependencies
 
 ## Local Ollama Version
 
