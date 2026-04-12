@@ -4,7 +4,7 @@ import requests
 import streamlit as st
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-from langchain_anthropic import ChatAnthropic
+from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain.schema import Document
 
@@ -19,9 +19,9 @@ def load_embeddings():
 
 @st.cache_resource
 def load_llm():
-    return ChatAnthropic(
-        api_key=st.secrets["ANTHROPIC_API_KEY"],
-        model="claude-3-5-haiku-20241022"
+    return ChatGroq(
+        api_key=st.secrets["GROQ_API_KEY"],
+        model="llama-3.3-70b-versatile"
     )
 
 @st.cache_resource
