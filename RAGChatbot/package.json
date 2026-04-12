@@ -1,0 +1,15 @@
+{
+  "name": "rag-chatbot",
+  "version": "1.0.0",
+  "description": "RAG Chatbot with Document Q&A using Streamlit and LangChain",
+  "main": "app.py",
+  "scripts": {
+    "start": "streamlit run app.py",
+    "dev": "streamlit run app.py --server.headless false"
+  },
+  "keywords": ["rag", "chatbot", "streamlit", "langchain", "openai"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}
