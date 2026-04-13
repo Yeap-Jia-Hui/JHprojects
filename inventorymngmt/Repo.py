@@ -92,20 +92,20 @@ def reduce_product_quantity(sku: str, quantity: int):
     stock = cur.fetchone()
     if not stock:
         print("No such product!")
-        return
+        return False          # ← explicit False
     else:
         new_product_quantity = stock[3] - quantity
         if new_product_quantity < 0:
-            print('Not enough products in stock to reduce by that quantity!')
-            return
+            print('Not enough products in stock!')
+            return False      # ← explicit False
         else:
             with conn:
                 cur.execute(
                     "UPDATE products SET quantity=:quantity WHERE sku=:sku",
                     {'sku': sku, 'quantity': new_product_quantity}
                 )
-                
                 conn.commit()
+            return True      
 
 def increase_product_quantity(sku: str, quantity: int):
     conn, cur = get_cursor()
