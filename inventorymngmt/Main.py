@@ -68,9 +68,13 @@ with col2:
         increase_submitted = st.form_submit_button("Increase Quantity")
 
         if increase_submitted:
-            st.info(f"Increasing stock quantity...")
-            increase_product_quantity(increase_id, increase_quantity)
-            st.success("Product quantity updated successfully!")
+         result = increase_product_quantity(increase_id, increase_quantity)
+         if result:
+            st.success("Quantity increased successfully!")
+        else:
+            st.error("Failed! Check the SKU or quantity entered.")
+
+
 st.subheader("Delete Product")
 delete_id = st.text_input("Product SKU to Delete")
 if st.button("Delete Product"):

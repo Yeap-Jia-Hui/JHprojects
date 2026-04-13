@@ -104,6 +104,7 @@ def reduce_product_quantity(sku: str, quantity: int):
                     "UPDATE products SET quantity=:quantity WHERE sku=:sku",
                     {'sku': sku, 'quantity': new_product_quantity}
                 )
+                
                 conn.commit()
 
 def increase_product_quantity(sku: str, quantity: int):
@@ -112,7 +113,10 @@ def increase_product_quantity(sku: str, quantity: int):
     stock = cur.fetchone()
     if not stock:
         print("No such product!")
-        return
+        return False
+    if quantity < 0:
+        print("Quantity to increase must be positive!")
+        return False
     else:
         new_stock_quantity = stock[3] + quantity
         with conn:
@@ -121,6 +125,8 @@ def increase_product_quantity(sku: str, quantity: int):
                 {'sku': sku, 'quantity': new_stock_quantity}
             )
             conn.commit()
+        return True
+
 
 def delete_product(sku: str):
     conn, cur = get_cursor()
