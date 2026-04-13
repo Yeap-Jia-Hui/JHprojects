@@ -85,9 +85,9 @@ def add_product(product):
         print("Product added successfully.")
         return True
 
-def reduce_product_quantity(id: int, quantity: int):
+def reduce_product_quantity(sku: str, quantity: int):
     conn, cur = get_cursor()
-    cur.execute("SELECT * FROM products WHERE id=:id", {'id': id})
+    cur.execute("SELECT * FROM products WHERE sku=:sku", {'sku': sku})
     stock = cur.fetchone()
     if not stock:
         print("No such product!")
@@ -105,9 +105,9 @@ def reduce_product_quantity(id: int, quantity: int):
                 )
                 conn.commit()
 
-def increase_product_quantity(id: int, quantity: int):
+def increase_product_quantity(sku: str, quantity: int):
     conn, cur = get_cursor()
-    cur.execute("SELECT * FROM products WHERE id=:id", {'id': id})
+    cur.execute("SELECT * FROM products WHERE sku=:sku", {'sku': sku})
     stock = cur.fetchone()
     if not stock:
         print("No such product!")
@@ -116,12 +116,12 @@ def increase_product_quantity(id: int, quantity: int):
         new_stock_quantity = stock[3] + quantity
         with conn:
             cur.execute(
-                "UPDATE products SET quantity=:quantity WHERE id=:id",
-                {'id': id, 'quantity': new_stock_quantity}
+                "UPDATE products SET quantity=:quantity WHERE sku=:sku",
+                {'sku': sku, 'quantity': new_stock_quantity}
             )
             conn.commit()
 
-def delete_product(id):
+def delete_product(sku: str):
     conn, cur = get_cursor()
     with conn:
-        cur.execute("DELETE from products WHERE id=:id", {'id': id})
+        cur.execute("DELETE from products WHERE sku=:sku", {'sku': sku})
