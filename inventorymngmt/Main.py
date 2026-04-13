@@ -25,11 +25,12 @@ with st.form("add_product_form"):
     if submitted:
         st.info(f"Adding new product...")
         add_product(Product(name=name, 
-                            sku=sku, 
                             quantity=quantity, 
                             min_stock=min_stock, 
                             category=category, 
-                            location=location))
+                            location=location,
+                            sku=None 
+                            ))
         st.success("Product added successfully!")
 
 st.subheader(" Inventory")
