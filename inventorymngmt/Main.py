@@ -16,7 +16,6 @@ st.subheader("Add New Product")
 
 with st.form("add_product_form"):
     name = st.text_input("Name")
-    sku = st.number_input("SKU", step=1)
     quantity = st.number_input("Quantity",min_value=0, step=1)
     min_stock = st.number_input("Minimum Stock",min_value=0, step=1)
     category = st.text_input("Category")

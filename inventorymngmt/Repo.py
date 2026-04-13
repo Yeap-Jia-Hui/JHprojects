@@ -1,6 +1,14 @@
 import sqlite3
 from Model import Product
 import streamlit as st
+import uuid
+import random
+import string
+
+def generate_sku(length=8):
+    """Generate a random SKU consisting of uppercase letters and digits."""
+    characters = string.ascii_uppercase + string.digits
+    return ''.join(random.choice(characters) for _ in range(length))
 
 @st.cache_resource
 def get_db_connection():
@@ -50,6 +58,8 @@ def get_allproducts():
 
 def add_product(product):
     conn, cur = get_cursor()
+    if not product.sku:
+        product.sku = generate_sku()
     cur.execute("SELECT * FROM products WHERE sku = ?", (product.sku,))
     results = cur.fetchone()
     if results:

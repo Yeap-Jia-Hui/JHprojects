@@ -4,7 +4,7 @@ class Product:
     def __init__(
         self,
         name,
-        sku,
+        sku=None,
         quantity,
         min_stock,
         category="",
