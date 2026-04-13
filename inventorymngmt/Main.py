@@ -51,10 +51,16 @@ data =[
 st.dataframe(data, use_container_width=True)
 st.subheader("Update Product Quantity")
 col1, col2 = st.columns(2)
-with st.form("reduce_quantity_form"):
+with col1:
+    with st.form("reduce_quantity_form"):
         reduce_id = st.text_input("Product SKU to Reduce")
         reduce_quantity = st.number_input("Quantity to Reduce", min_value=0, step=1)
         reduce_submitted = st.form_submit_button("Reduce Quantity")
+with col2:
+    with st.form("increase_quantity_form"):
+        increase_id = st.text_input("Product SKU to Increase")
+        increase_quantity = st.number_input("Quantity to Increase", min_value=0, step=1)
+        increase_submitted = st.form_submit_button("Increase Quantity")
 
         if reduce_submitted:
          result = reduce_product_quantity(reduce_id, reduce_quantity)
