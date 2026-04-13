@@ -58,9 +58,11 @@ with col1:
         reduce_submitted = st.form_submit_button("Reduce Quantity")
 
         if reduce_submitted:
-            st.info(f"Reducing stock quantity...")
-            reduce_product_quantity(reduce_id, reduce_quantity)
-            st.success("Product quantity updated successfully!")
+         result = reduce_product_quantity(reduce_id, reduce_quantity)
+         if result:
+            st.success("Quantity reduced successfully!")
+        else:
+            st.error("Failed! Check the SKU or quantity entered.")
 with col2:
     with st.form("increase_quantity_form"):
         increase_id = st.text_input("Product SKU to Increase")
@@ -81,6 +83,8 @@ if st.button("Delete Product"):
     st.info(f"Deleting product...")
     delete_product(delete_id)
     st.success("Product deleted successfully!")
+else:
+        st.error("Failed! Check the SKU entered.")
 
 if __name__ == "__main__":
     st.write("Welcome to the Inventory Management System! Use the sidebar to manage your inventory.")
