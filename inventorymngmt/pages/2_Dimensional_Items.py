@@ -28,7 +28,7 @@ with st.form("add_dimensional_form"):
 
     if submitted:
         st.info(f"Adding new product...")
-        add_product(Product(name=name, 
+        result=add_product(Product(name=name, 
                             quantity=quantity, 
                             min_stock=min_stock, 
                             category=category, 
@@ -37,7 +37,7 @@ with st.form("add_dimensional_form"):
                             width=width,
                             sku=None 
                             ))
-        if add_product:
+        if result:
             st.success("Product added successfully!")
         else:
             st.error("Failed to add product. Check the details entered.")
