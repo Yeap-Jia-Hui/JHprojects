@@ -83,8 +83,37 @@ with col2:
         d_increase_submitted = st.form_submit_button("Increase Quantity")
 
         if d_increase_submitted:
-            result = increase_product_quantity(d_increase_id, d_increase_quantity)
+            result = d_increase_quantity(d_increase_id, d_increase_quantity)
             if result:
                 st.success("Quantity increased successfully!")
         else:
+                 st.error("Failed! Check the SKU or quantity entered.")
+
+st.subheader("Update Product Dimensions")
+col3, col4 = st.columns
+with col3:
+    with st.form("reduce length"):
+        d_reduce_dimension_id = st.text_input("Product SKU to Reduce")
+        d_reduce_dimension_quantity = st.number_input("Quantity to Reduce", min_value=0, step=0.1)
+        d_reduce_dimension_sumbmitted = st.form_submit_button("Reduce Length")
+
+    if d_increase_submitted:
+            result = d_reduce_dimension_quantity(d_reduce_dimension_id , d_reduce_dimension_quantity)
+            if result:
+                st.success("Quantity reduced successfully!")
+    else:
+                 st.error("Failed! Check the SKU or quantity entered.")
+
+col3, col4 = st.columns
+with col4:
+    with st.form("reduce length"):
+        d_increase_dimension_id = st.text_input("Product SKU to Increase")
+        d_increase_dimension_quantity = st.number_input("Quantity to Increase", min_value=0, step=0.1)
+        d_increase_dimension_sumbmitted = st.form_submit_button("Increase Length")
+
+    if d_increase_submitted:
+            result = d_reduce_dimension_quantity(d_reduce_dimension_id , d_reduce_dimension_quantity)
+            if result:
+                st.success("Quantity increased successfully!")
+    else:
                  st.error("Failed! Check the SKU or quantity entered.")
