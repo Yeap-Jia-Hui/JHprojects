@@ -21,8 +21,8 @@ with st.form("add_dimensional_form"):
     min_stock = st.number_input("Minimum Stock",min_value=0, step=1)
     category = st.selectbox("Category", ["Wood", "Metal", "Plastic"])
     location = st.selectbox("Location",["Malaysia","Singapore"])
-    length = st.number_input("Length (cm)", min_value=0.0, step=0.1)
-    width = st.number_input("Width (cm)", min_value=0.0, step=0.1)
+    length = st.number_input("Length (m)", min_value=0.0, step=0.1)
+    width = st.number_input("Width (m)", min_value=0.0, step=0.1)
 
     submitted = st.form_submit_button("Add Product")
 
