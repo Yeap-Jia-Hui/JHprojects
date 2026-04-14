@@ -10,6 +10,9 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 st.set_page_config(page_title="Dimensional Items", layout="wide")
 st.title("Dimensional Items ")
 
+if st.button(" Back to Main"):
+    st.switch_page("Main.py")
+
 st.subheader("Add New Product")
 
 with st.form("add_dimensional_form"):

@@ -7,6 +7,8 @@ from Repo import get_allproducts, add_product, reduce_product_quantity, increase
 st.set_page_config(page_title="Inventory Management System", layout="wide")
 st.title("Inventory Management System :warehouse:")
 
+if st.button(" Go to Dimensional Items"):
+    st.switch_page("pages/2_Dimensional_Items.py")
 
 if st.button("Initialize Database", help="Initialize the database"):
     create_table()
