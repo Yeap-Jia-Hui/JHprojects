@@ -30,6 +30,8 @@ def create_table():
             sku TEXT NOT NULL UNIQUE,
             quantity INTEGER NOT NULL,
             min_stock INTEGER NOT NULL,
+            length REAL,
+            width REAL,    
             category TEXT NOT NULL,
             location TEXT NOT NULL,
             created_at TEXT NOT NULL,
@@ -48,12 +50,14 @@ def get_allproducts():
             id=row[0],
             name=row[1],
             sku=row[2],
-            quantity=row[3],
-            min_stock=row[4],
-            category=row[5],
-            location=row[6],
-            created_at=row[7],
-            updated_at=row[8]
+            length=row[3],
+            width=row[4],
+            quantity=row[5],
+            min_stock=row[6],
+            category=row[7],
+            location=row[8],
+            created_at=row[9],
+            updated_at=row[10]
         )
         products.append(product)
     return products
@@ -70,8 +74,8 @@ def add_product(product):
     else:
         with conn:
             cur.execute('''
-                INSERT INTO products (name, sku, quantity, min_stock, category, location, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO products (name, sku, quantity, min_stock, category, location, length, width, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 product.name,
                 product.sku,
@@ -79,6 +83,8 @@ def add_product(product):
                 product.min_stock,
                 product.category,
                 product.location,
+                product.length,
+                product.width,
                 product.created_at,
                 product.updated_at,
             ))

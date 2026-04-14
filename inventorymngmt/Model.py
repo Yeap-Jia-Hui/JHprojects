@@ -9,11 +9,15 @@ class Product:
         category="",
         location="",
         sku=None,
+        length=None,
+        width=None,
         created_at=None,
         updated_at=None,
         id=None,
     ):
         self.name = name
+        self.length = length
+        self.width = width
         self.sku = sku
         self.quantity = quantity
         self.min_stock = min_stock
