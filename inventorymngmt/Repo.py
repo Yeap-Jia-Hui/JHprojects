@@ -141,7 +141,7 @@ def update_dimension(sku:str,length: float, width :float):
     else:
         with conn:
             cur.execute(
-                "UPDATE products SET length=:length, width+:width WHERE sku=:sku"
+                "UPDATE products SET length=:length, width+:width WHERE sku=:sku",
                 {'sku':sku, 'length': length, 'width':width}
             )    
             conn.commit()
