@@ -28,17 +28,16 @@ def get_allproducts():
     products = []
     for row in all_products:
         product = Product(
-            id=row[0],
-            name=row[1],
-            sku=row[2],
-            length=row[3],
-            width=row[4],
-            quantity=row[5],
-            min_stock=row[6],
-            category=row[7],
-            location=row[8],
-            created_at=row[9],
-            updated_at=row[10]
+            id=row["id"],           
+            sku=row["sku"],
+            length=row["length"],
+            width=row["width"],
+            quantity=row["quantity"],
+            min_stock=row["min_stock"],
+            category=row["category"],
+            location=row["location"],
+            created_at=row["created_at"],
+            updated_at=row["updated_at"]
         )
         products.append(product)
     return products
