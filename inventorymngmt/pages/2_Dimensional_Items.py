@@ -90,7 +90,7 @@ with col2:
                  st.error("Failed! Check the SKU or quantity entered.")
 
 st.subheader("Update Product Dimensions")
-col1, col2 = st.columns
+col1, col2 = st.columns(3)
 with col1:
     with st.form("reduce length"):
         d_reduce_dimension_id = st.text_input("Product SKU to Reduce")
@@ -116,3 +116,15 @@ with col2:
                 st.success("Quantity increased successfully!")
             else:
                  st.error("Failed! Check the SKU or quantity entered.")
+
+
+st.subheader("Delete Product")
+with st.form("Delete Product"):
+    delete_id = st.text_input("Product SKU to Delete")
+    delete_submitted = st.form_submit_button("Delete Product")
+    if delete_submitted:
+        result = delete_product(delete_id)
+        if result:
+            st.success("Product deleted sucessfully")
+        else:
+            st.error("Failed! Check the SKU")
