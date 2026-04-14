@@ -100,23 +100,17 @@ def reduce_product_quantity(sku: str, quantity: int):
         print("No such product!")
         return False          # ← explicit False
     else:
-        new_product_quantity = stock[5] - quantity
+        new_product_quantity = stock - quantity
         if new_product_quantity < 0:
             print('Not enough products in stock!')
             return False      # ← explicit False
-        else:
-            with conn:
-                cur.execute(
-                    "UPDATE products SET quantity=:quantity WHERE sku=:sku",
-                    {'sku': sku, 'quantity': new_product_quantity}
-                )
-                conn.commit()
-            return True      
+        conn.table("products").update({"quantity": new_product_quantity}).eq("sku", sku).execute()
+        return True      
 
 def increase_product_quantity(sku: str, quantity: int):
-    conn, cur = get_cursor()
-    cur.execute("SELECT * FROM products WHERE sku=:sku", {'sku': sku})
-    stock = cur.fetchone()
+    conn = get_db_connection()
+    response = conn.table("products").select("*").eq("sku", sku).execute()
+    stock = response.data
     if not stock:
         print("No such product!")
         return False
@@ -124,19 +118,14 @@ def increase_product_quantity(sku: str, quantity: int):
         print("Quantity to increase must be positive!")
         return False
     else:
-        new_stock_quantity = stock[5] + quantity
-        with conn:
-            cur.execute(
-                "UPDATE products SET quantity=:quantity WHERE sku=:sku",
-                {'sku': sku, 'quantity': new_stock_quantity}
-            )
-            conn.commit()
+        new_stock_quantity = stock + quantity
+        conn.table("products").update({"quantity": new_stock_quantity}).eq("sku", sku).execute()
         return True
     
 def reduce_dimension(sku: str, length: float, width: float):
-    conn, cur = get_cursor()
-    cur.execute("SELECT * FROM products WHERE sku=:sku", {'sku': sku})
-    stock = cur.fetchone()
+    conn = get_db_connection()
+    response = conn.table("products").select("*").eq("sku", sku).execute()
+    stock = response.data
     if not stock:
         print("No such product!")
         return False
