@@ -17,8 +17,8 @@ def generate_sku(length=8):
 
 @st.cache_resource
 def get_db_connection():
-    url = st.secrets["supabase"]["url"]
-    key = st.secrets["supabase"]["key"]
+    url = st.secrets["SUPABASE_URL"]
+    key = st.secrets["SUPABASE_KEY"]
     return create_client(url, key)
 
 def get_cursor():
