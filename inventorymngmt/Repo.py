@@ -53,16 +53,16 @@ def add_product(product):
         print("Product with this SKU already exists.")
         return False
     conn.table("products").insert((
-                product.name,
-                product.sku,
-                product.length,
-                product.width,
-                product.quantity,
-                product.min_stock,
-                product.category,
-                product.location,
-                product.created_at,
-                product.updated_at,
+                "name": product.name,
+                "sku": product.sku,
+                "length": product.length,
+                "width": product.width,
+                "quantity": product.quantity,
+                "min_stock": product.min_stock,
+                "category": product.category,
+                "location": product.location,
+                "created_at": product.created_at,
+                "updated_at": product.updated_at
             )).execute()
     return True
 
