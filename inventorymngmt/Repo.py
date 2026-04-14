@@ -69,12 +69,11 @@ def add_product(product):
 def reduce_product_quantity(sku: str, quantity: int):
     conn = get_db_connection()
     response = conn.table("products").select("*").eq("sku", sku).execute()
-    stock = response.data
-    if not stock:
+    if not response.data:
         print("No such product!")
         return False          # ← explicit False
     else:
-        new_product_quantity = stock - quantity
+        new_product_quantity = response.data[0]["quantity"] - quantity
         if new_product_quantity < 0:
             print('Not enough products in stock!')
             return False      # ← explicit False
@@ -104,8 +103,8 @@ def reduce_dimension(sku: str, length: float, width: float):
         print("No such product!")
         return False
     else:
-        new_length = stock[3] - length
-        new_width = stock[4] - width
+        new_length = stock[0]["length"] - length
+        new_width = stock[0]["width"] - width
         if new_length < 0 or new_width < 0:
             print('Dimension cannot go below zero!')
             return False
@@ -120,8 +119,8 @@ def increase_dimension(sku: str, length: float, width: float):
         print("No such product!")
         return False
     else:
-        new_length = stock[3] + length
-        new_width = stock[4] + width
+        new_length = stock[0]["length"] + length
+        new_width = stock[0]["width"] + width
         conn.table("products").update({"length": new_length, "width": new_width}).eq("sku", sku).execute()
         return True
 
