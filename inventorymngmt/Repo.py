@@ -25,7 +25,7 @@ def get_cursor():
     conn = get_db_connection()
     response = conn.table("products").select("*").execute()
     products = response.data
-    return conn,conn.cursor()
+    return conn
 
 def create_table():
     conn, cur = get_cursor()
