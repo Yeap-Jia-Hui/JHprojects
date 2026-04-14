@@ -90,8 +90,8 @@ with col2:
                  st.error("Failed! Check the SKU or quantity entered.")
 
 st.subheader("Update Product Dimensions")
-col3, col4 = st.columns
-with col3:
+col1, col2 = st.columns
+with col1:
     with st.form("reduce length"):
         d_reduce_dimension_id = st.text_input("Product SKU to Reduce")
         d_reduce_dimension_quantity = st.number_input("Quantity to Reduce", min_value=0, step=0.1)
@@ -104,7 +104,7 @@ with col3:
     else:
                  st.error("Failed! Check the SKU or quantity entered.")
 
-with col4:
+with col2:
     with st.form("reduce length"):
         d_increase_dimension_id = st.text_input("Product SKU to Increase")
         d_increase_dimension_quantity = st.number_input("Quantity to Increase", min_value=0, step=0.1)
