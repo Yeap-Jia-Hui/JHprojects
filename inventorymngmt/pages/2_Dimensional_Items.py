@@ -61,3 +61,30 @@ data =[
     for p in products
 ]
 st.dataframe(data, use_container_width=True)
+
+st.dataframe(data, use_container_width=True)
+st.subheader("Update Product Quantity")
+col1, col2 = st.columns(2)
+with col1:
+    with st.form("reduce_quantity_form"):
+        d_reduce_id = st.text_input("Product SKU to Reduce")
+        d_reduce_quantity = st.number_input("Quantity to Reduce", min_value=0, step=1)
+        d_reduce_submitted = st.form_submit_button("Reduce Quantity")
+        if d_reduce_submitted:
+            result = reduce_product_quantity(d_reduce_id, d_reduce_quantity)
+            if result is True:
+                st.success("Quantity reduced successfully!")
+        else:
+            st.error("Failed! Check the SKU or quantity entered.")
+with col2:
+    with st.form("increase_quantity_form"):
+        d_increase_id = st.text_input("Product SKU to Increase")
+        d_increase_quantity = st.number_input("Quantity to Increase", min_value=0, step=1)
+        d_increase_submitted = st.form_submit_button("Increase Quantity")
+
+        if d_increase_submitted:
+            result = increase_product_quantity(d_increase_id, d_increase_quantity)
+            if result:
+                st.success("Quantity increased successfully!")
+        else:
+                 st.error("Failed! Check the SKU or quantity entered.")
