@@ -59,6 +59,10 @@ data =[
     }
     for p in products
 ]
+
+search = st.text_input(" Search by name or SKU")
+filtered = [p for p in products if search.lower() in p.name.lower() or search.lower() in p.sku.lower()]
+
 st.dataframe(data, use_container_width=True)
 st.subheader("Update Product Quantity")
 col1, col2 = st.columns(2)
