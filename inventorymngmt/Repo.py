@@ -83,15 +83,14 @@ def reduce_product_quantity(sku: str, quantity: int):
 def increase_product_quantity(sku: str, quantity: int):
     conn = get_db_connection()
     response = conn.table("products").select("*").eq("sku", sku).execute()
-    stock = response.data
-    if not stock:
+    if not response.data:
         print("No such product!")
         return False
     if quantity < 0:
         print("Quantity to increase must be positive!")
         return False
     else:
-        new_stock_quantity = stock + quantity
+        new_stock_quantity = response.data[0]["quantity"] + quantity
         conn.table("products").update({"quantity": new_stock_quantity}).eq("sku", sku).execute()
         return True
     
