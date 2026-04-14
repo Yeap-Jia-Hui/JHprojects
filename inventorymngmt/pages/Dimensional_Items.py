@@ -34,4 +34,27 @@ with st.form("add_dimensional_form"):
                             width=width,
                             sku=None 
                             ))
-        st.success("Product added successfully!")
+        if add_product:
+            st.success("Product added successfully!")
+        else:
+            st.error("Failed to add product. Check the details entered.")
+
+
+st.subheader(" Inventory")
+products = get_allproducts()
+data =[
+    {
+        "Name": p.name,
+        "SKU": p.sku,
+        "Quantity": p.quantity,
+        "Min Stock": p.min_stock,
+        "Category": p.category,
+        "Location": p.location,
+        "length": p.length,
+        "width": p.width,
+        "created_at": p.created_at,
+        "status": "Low Stock" if p.quantity < p.min_stock else "In Stock"
+    }
+    for p in products
+]
+st.dataframe(data, use_container_width=True)

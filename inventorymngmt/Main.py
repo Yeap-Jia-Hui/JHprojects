@@ -31,7 +31,10 @@ with st.form("add_product_form"):
                             location=location,
                             sku=None 
                             ))
-        st.success("Product added successfully!")
+        if add_product:
+             st.success("Product added successfully!")
+        else:
+             st.error("Failed to add product. Check the details entered.")
 
 st.subheader(" Inventory")
 products = get_allproducts()
