@@ -7,7 +7,13 @@ def find_relevant_notes(question, notes, top_n=5):
     scored = []
 
     for note in notes:
-        search_text = note["name"].lower() + " " + note["content"][:500].lower()
+        search_text = (
+            note["name"].lower()
+            + " "
+            + note["path"].lower()
+            + " "
+            + note["content"][:500].lower()
+        )
         score = sum(1 for keyword in keywords if keyword in search_text)
         scored.append((score, note))
 
@@ -22,7 +28,7 @@ def find_relevant_notes(question, notes, top_n=5):
 
 def retrieve_chunks(matched_notes, question, embeddings, splitter, k=8):
     documents = [
-        Document(page_content=note["content"], metadata={"source": note["name"]})
+        Document(page_content=note["content"], metadata={"source": note["path"]})
         for note in matched_notes
     ]
     chunks = splitter.split_documents(documents)

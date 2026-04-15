@@ -6,6 +6,28 @@ from rag_app.services.retrieval import find_relevant_notes, retrieve_chunks
 from rag_app.services.vault import fetch_vault_from_github
 
 
+def build_note_tree_lines(notes):
+    tree = {}
+    for note in notes:
+        parts = note["path"].split("/")
+        node = tree
+        for folder in parts[:-1]:
+            node = node.setdefault(folder, {})
+        node.setdefault("__files__", []).append(parts[-1])
+
+    lines = []
+
+    def walk(node, depth=0):
+        for folder in sorted([key for key in node.keys() if key != "__files__"]):
+            lines.append(f'{"  " * depth}- {folder}/')
+            walk(node[folder], depth + 1)
+        for filename in sorted(node.get("__files__", [])):
+            lines.append(f'{"  " * depth}- {filename}')
+
+    walk(tree)
+    return lines
+
+
 def render_sidebar():
     with st.sidebar:
         st.title("Obsidian RAG")
@@ -25,9 +47,9 @@ def render_sidebar():
             st.stop()
 
         st.success(f"{len(notes)} notes loaded")
-        with st.expander("View loaded notes"):
-            for note in notes:
-                st.text(f"- {note['name']}")
+        with st.expander("View loaded notes (folder structure)"):
+            for line in build_note_tree_lines(notes):
+                st.text(line)
 
         st.markdown("---")
         st.caption("Notes refresh every 5 minutes automatically.")
