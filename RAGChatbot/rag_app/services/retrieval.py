@@ -2,12 +2,16 @@ from langchain.schema import Document
 from langchain_community.vectorstores import FAISS
 
 
-TAG_KEYWORD_MAP = {
-    "who am i": ["profile", "about", "personal", "identity"],
-    "my name": ["profile", "about"],
-    "my skills": ["skills", "expertise"],
-    "my projects": ["projects", "portfolio"],
-}
+PRIORITY_FILE_RULES = [
+    {
+        "keywords": ["who is", "who am i", "jia hui", "about me", "about you", "tell me about"],
+        "filename": "About J.md",
+    },
+    {
+        "keywords": ["project", "projects", "built", "portfolio", "what have you made"],
+        "filename": "Master-Project-List.md",
+    },
+]
 
 # Lowered threshold to allow more candidate chunks through.
 MIN_RELEVANCE_SCORE = 0.15
@@ -106,7 +110,7 @@ def smart_search(query: str, vectorstore, k=5):
 
     q_lower = query.lower()
 
-    for keyword, tags in TAG_KEYWORD_MAP.items():
+    for keyword, tags in PRIORITY_FILE_RULES.items():
         if keyword in q_lower:
             def tag_filter(metadata):
                 metadata_tags = metadata.get("tags", [])
@@ -200,6 +204,35 @@ def find_relevant_notes(question, notes, top_n=5):
 
     return [note for _, note in scored[:top_n]]
 
+def get_priority_notes(query: str, notes: list) -> list:
+    """Force-inject specific notes based on query keywords."""
+    q_lower = query.lower()
+    priority_names = []
+
+    for rule in PRIORITY_FILE_RULES:
+        if any(kw in q_lower for kw in rule["keywords"]):
+            priority_names.append(rule["filename"])
+
+    if not priority_names:
+        return []
+
+    # Find matching note objects from the loaded vault
+    return [n for n in notes if n["name"] in priority_names]
+
+def find_relevant_notes_with_priority(query: str, notes: list, top_n=5) -> list:
+    """Run keyword search, but always include priority notes at the top."""
+    priority = get_priority_notes(query, notes)
+    keyword_results = find_relevant_notes(query, notes, top_n=top_n)
+
+    # Merge: priority notes first, then keyword results (no duplicates)
+    seen = {n["name"] for n in priority}
+    merged = priority[:]
+    for note in keyword_results:
+        if note["name"] not in seen:
+            merged.append(note)
+            seen.add(note["name"])
+
+    return merged[:top_n]
 
 def retrieve_chunks(matched_notes, question, embeddings, splitter, k=8):
     documents = [

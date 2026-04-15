@@ -2,7 +2,7 @@ import streamlit as st
 
 from rag_app.services.qa import answer_question, build_context, collect_sources
 from rag_app.services.resources import load_embeddings, load_llm, load_splitter
-from rag_app.services.retrieval import find_relevant_notes, retrieve_chunks
+from rag_app.services.retrieval import find_relevant_notes_with_priority, retrieve_chunks
 from rag_app.services.vault import fetch_vault_from_github
 
 
@@ -106,7 +106,7 @@ def render_chat(notes, embeddings, llm, splitter):
 
     with st.chat_message("assistant"):
         with st.spinner("Searching your vault..."):
-            matched_notes = find_relevant_notes(prompt, notes)
+            matched_notes = find_relevant_notes_with_priority(prompt, notes)
             results = retrieve_chunks(matched_notes, prompt, embeddings, splitter)
 
         if not results:
