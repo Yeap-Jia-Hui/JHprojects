@@ -9,6 +9,9 @@ TAG_KEYWORD_MAP = {
     "my projects": ["projects", "portfolio"],
 }
 
+# Lowered threshold to allow more candidate chunks through.
+MIN_RELEVANCE_SCORE = 0.15
+
 
 def infer_tags(note):
     haystack = f"{note['path']} {note['name']} {note['content'][:1000]}".lower()
@@ -24,6 +27,24 @@ def infer_tags(note):
     return sorted(tags)
 
 
+def search_with_debug_scores(query, vectorstore, k=5, filter_fn=None):
+    docs_with_scores = vectorstore.similarity_search_with_relevance_scores(
+        query,
+        k=k,
+        filter=filter_fn,
+    )
+
+    for doc, score in docs_with_scores:
+        preview = doc.page_content[:80].replace("\n", " ")
+        print(f"Score: {score:.4f} | {preview}")
+
+    return [
+        doc
+        for doc, score in docs_with_scores
+        if score >= MIN_RELEVANCE_SCORE
+    ]
+
+
 def smart_search(query: str, vectorstore, k=5):
     q_lower = query.lower()
 
@@ -33,10 +54,20 @@ def smart_search(query: str, vectorstore, k=5):
                 metadata_tags = metadata.get("tags", [])
                 return any(tag in metadata_tags for tag in tags)
 
-            docs = vectorstore.similarity_search(query, k=k, filter=tag_filter)
+            docs = search_with_debug_scores(
+                query=query,
+                vectorstore=vectorstore,
+                k=k,
+                filter_fn=tag_filter,
+            )
             if docs:
                 return docs
 
+    docs = search_with_debug_scores(query=query, vectorstore=vectorstore, k=k)
+    if docs:
+        return docs
+
+    # Final fallback if threshold filtering removed everything.
     return vectorstore.similarity_search(query, k=k)
 
 
