@@ -7,7 +7,7 @@ SYSTEM_PROMPT = (
     "2. If the notes do not contain enough information to answer, say exactly: "
     "'I could not find this in your notes.' Do not guess or fill in gaps.\n"
     "3. Always cite the note name (e.g. 'According to RAG-Chatbot.md...') for every claim.\n"
-    "4. Be concise and direct. Do not add commentary not found in the notes.\n"
+    "4. Provide a one to two sentence summary of the files sourced. Do not add commentary not found in the notes.\n"
     "5. If the question is ambiguous, answer what the notes most closely support.\n"
 )
 
