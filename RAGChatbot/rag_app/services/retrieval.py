@@ -15,11 +15,11 @@ MIN_RELEVANCE_SCORE = 0.15
 PRIORITY_SOURCE_RULES = [
     {
         "keywords": ["projects", "project"],
-        "source": "Jia Hui's network/Perplexity/Master-Project-List.md",
+        "source": "Master-Project-List.md",
     },
     {
         "keywords": ["who am i"],
-        "source": "Jia Hui's network/Claude/About J.md",
+        "source": "About J.md",
     },
 ]
 
