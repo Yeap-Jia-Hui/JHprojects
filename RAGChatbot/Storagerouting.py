@@ -8,6 +8,7 @@ from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain.schema import Document
 
+
 # ================================================================
 #  CACHED RESOURCES — loaded ONCE per session, never re-downloaded
 # ================================================================
@@ -68,6 +69,27 @@ def fetch_vault_from_github():
 # ================================================================
 #  RETRIEVAL HELPERS
 # ================================================================
+TAG_KEYWORD_MAP = {
+    "who am i": ["profile", "about", "personal", "identity"],
+    "name": ["profile", "about"],
+    "skills": ["skills", "expertise"],
+    "projects": ["projects", "portfolio"],
+}
+
+def smart_search(query: str, vectorstore, k=5):
+    q_lower = query.lower()
+    
+    # Check if query matches a known keyword pattern
+    for keyword, tags in TAG_KEYWORD_MAP.items():
+        if keyword in q_lower:
+            # Try tag-filtered search first
+            docs = vectorstore.similarity_search(query, k=k, filter={"tags": tags})
+            if docs:
+                return docs
+    
+    # Fallback to pure semantic search
+    return vectorstore.similarity_search(query, k=k)
+
 
 def find_relevant_notes(question, notes, top_n=5):
     keywords = [w.lower() for w in question.split() if len(w) > 3]
