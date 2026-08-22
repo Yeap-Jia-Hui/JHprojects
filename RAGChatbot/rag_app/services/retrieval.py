@@ -29,6 +29,8 @@ QUERY_REWRITE_RULES = {
     "my name": ["who am i", "about me", "profile"],
     "my skills": ["skills", "expertise", "tech stack", "what am i good at"],
     "my projects": ["projects", "portfolio", "things i built", "my work"],
+    "what projects": ["projects", "portfolio", "things i built", "my work"],
+    "projects has jia hui done": ["projects", "portfolio", "things jia hui built", "project list"],
 }
 
 NAME_REWRITE_RULES = {
@@ -162,8 +164,11 @@ def rewrite_query(query: str) -> list[str]:
         if phrase in q_lower:
             rewrites.extend(aliases)
 
+    project_terms = ["project", "projects", "portfolio", "built", "done"]
+    is_project_query = any(term in q_lower for term in project_terms)
+
     for name, aliases in NAME_REWRITE_RULES.items():
-        if name in q_lower:
+        if name in q_lower and not is_project_query:
             rewrites.extend(aliases)
 
     return _dedupe_keep_order(rewrites)
