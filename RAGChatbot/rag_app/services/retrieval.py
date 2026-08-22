@@ -8,11 +8,11 @@ from langchain_community.vectorstores import FAISS
 PRIORITY_RULES = [
     {
         "keywords": ["project", "projects", "portfolio", "what have you made", "built"],
-        "source": "Jia Hui's network/Perplexity/Master-Project-List.md",
+        "source": "Jia Hui's network/Projects/Master Project List 2026",
     },
     {
         "keywords": ["who am i", "about me", "my profile", "my name", "tell me about"],
-        "source": "Jia Hui's network/Claude/About J.md",
+        "source": "Jia Hui's network/About/About Jia Hui",
     },
 ]
 
