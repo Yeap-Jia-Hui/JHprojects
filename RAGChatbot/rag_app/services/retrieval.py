@@ -36,7 +36,7 @@ NAME_REWRITE_RULES = {
 }
 
 # Lowered threshold to allow more candidate chunks through.
-MIN_RELEVANCE_SCORE = 0.15
+MIN_RELEVANCE_SCORE = 0.075
 
 
 def infer_tags(note):
