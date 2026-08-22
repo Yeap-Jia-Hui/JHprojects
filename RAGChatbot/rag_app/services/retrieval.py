@@ -79,7 +79,7 @@ def _make_tags_filter(tags: list[str]) -> Callable:
     return tags_filter
 
 
-def search_with_debug_scores(query, vectorstore, k=5, filter_fn=None):
+def search_with_debug_scores(query, vectorstore, k=15, filter_fn=None):
     docs_with_scores = vectorstore.similarity_search_with_relevance_scores(
         query,
         k=k,
