@@ -11,6 +11,12 @@ def load_embeddings():
 
 
 @st.cache_resource
+def load_reranker():
+    from sentence_transformers import CrossEncoder
+
+    return CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+
+@st.cache_resource
 def load_llm():
     return ChatGroq(
         api_key=st.secrets["GROQ_API_KEY"],

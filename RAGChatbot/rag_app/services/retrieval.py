@@ -189,6 +189,20 @@ def smart_retrieve(query, vectorstore, k=5):
     return results[:k]
 
 
+def rerank_docs(query, docs, reranker, top_k=8):
+    if not docs:
+        return []
+
+    pairs = [(query, doc.page_content) for doc in docs]
+    scores = reranker.predict(pairs)
+    ranked = sorted(zip(docs, scores), key=lambda item: item[1], reverse=True)
+
+    for doc, score in ranked:
+        doc.metadata["rerank_score"] = float(score)
+
+    return [doc for doc, _ in ranked[:top_k]]
+
+
 def find_relevant_notes(question, notes, top_n=5):
     keywords = [word.lower() for word in question.split() if len(word) > 3]
     scored = []
@@ -236,7 +250,7 @@ def find_relevant_notes_with_priority(query: str, notes: list, top_n=5) -> list:
     return merged[:top_n]
 
 
-def retrieve_chunks(matched_notes, question, embeddings, splitter, k=8):
+def retrieve_chunks(matched_notes, question, embeddings, splitter, reranker, k=8, candidate_k=30):
     documents = [
         Document(
             page_content=note["content"],
@@ -245,5 +259,10 @@ def retrieve_chunks(matched_notes, question, embeddings, splitter, k=8):
         for note in matched_notes
     ]
     chunks = splitter.split_documents(documents)
+    if not chunks:
+        return []
+
     store = FAISS.from_documents(chunks, embeddings)
-    return smart_retrieve(question, store, k=k)
+    candidate_count = min(candidate_k, len(chunks))
+    candidates = smart_retrieve(question, store, k=candidate_count)
+    return rerank_docs(question, candidates, reranker, top_k=k)

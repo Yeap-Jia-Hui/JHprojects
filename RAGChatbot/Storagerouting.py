@@ -1,7 +1,7 @@
 import streamlit as st
 
 from rag_app.services.qa import answer_question, build_context, collect_sources
-from rag_app.services.resources import load_embeddings, load_llm, load_splitter
+from rag_app.services.resources import load_embeddings, load_llm, load_reranker, load_splitter
 from rag_app.services.retrieval import find_relevant_notes_with_priority, retrieve_chunks
 from rag_app.services.vault import fetch_vault_from_github
 
@@ -80,7 +80,7 @@ def render_sidebar():
         return notes
 
 
-def render_chat(notes, embeddings, llm, splitter):
+def render_chat(notes, embeddings, llm, splitter, reranker):
     st.title("Chat with your Obsidian Vault")
 
     if "messages" not in st.session_state:
@@ -107,7 +107,7 @@ def render_chat(notes, embeddings, llm, splitter):
     with st.chat_message("assistant"):
         with st.spinner("Searching your vault..."):
             matched_notes = find_relevant_notes_with_priority(prompt, notes)
-            results = retrieve_chunks(matched_notes, prompt, embeddings, splitter)
+            results = retrieve_chunks(matched_notes, prompt, embeddings, splitter, reranker)
 
         if not results:
             no_results_message = "No relevant content found in your notes for this question."
@@ -138,10 +138,11 @@ def main():
 
     embeddings = load_embeddings()
     llm = load_llm()
+    reranker = load_reranker()
     splitter = load_splitter()
 
     notes = render_sidebar()
-    render_chat(notes, embeddings, llm, splitter)
+    render_chat(notes, embeddings, llm, splitter, reranker)
 
 
 if __name__ == "__main__":
