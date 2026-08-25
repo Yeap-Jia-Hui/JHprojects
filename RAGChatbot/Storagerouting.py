@@ -81,7 +81,7 @@ def render_sidebar():
 
 
 def render_chat(notes, embeddings, llm, splitter, reranker):
-    st.title("Chat with your Obsidian Vault")
+    st.title("Chat with Jia Hui's Vault")
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
