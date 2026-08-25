@@ -14,6 +14,12 @@ PRIORITY_RULES = [
         "keywords": ["who am i", "about me", "my profile", "my name", "tell me about"],
         "source": "Jia Hui's network/About/About Jia Hui",
     },
+
+    {
+            "keywords": ["study", "academics", "school", "university", "education", "degree"],
+            "source": "Jia Hui's network/Academics/Academic summary",
+    },
+
 ]
 
 # Semantic tag hints used for filtered retrieval.
@@ -22,6 +28,7 @@ TAG_KEYWORD_MAP = {
     "my name": ["profile", "about"],
     "my skills": ["skills", "expertise"],
     "my projects": ["projects", "portfolio"],
+    "study": ["academics", "education", "school", "university"],
 }
 
 QUERY_REWRITE_RULES = {
@@ -31,6 +38,7 @@ QUERY_REWRITE_RULES = {
     "my projects": ["projects", "portfolio", "things i built", "my work"],
     "what projects": ["projects", "portfolio", "things i built", "my work"],
     "projects has jia hui done": ["projects", "portfolio", "things jia hui built", "project list"],
+    "what does jia hui study": ["academics", "education", "school", "university"],
 }
 
 NAME_REWRITE_RULES = {
@@ -79,7 +87,7 @@ def _make_tags_filter(tags: list[str]) -> Callable:
     return tags_filter
 
 
-def search_with_debug_scores(query, vectorstore, k=15, filter_fn=None):
+def search_with_debug_scores(query, vectorstore, k=30, filter_fn=None):
     docs_with_scores = vectorstore.similarity_search_with_relevance_scores(
         query,
         k=k,
